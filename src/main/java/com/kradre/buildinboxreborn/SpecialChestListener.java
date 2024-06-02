@@ -37,7 +37,7 @@ public class SpecialChestListener implements Listener {
             ItemStack item = event.getItemInHand();
             if(item.hasItemMeta() && item.getItemMeta().getDisplayName() != null) {
                 String schematicName = item.getItemMeta().getDisplayName();
-                File schematicFile = new File(BuildInBoxReborn.getInstance().getDataFolder(), schematicName + ".schem");
+                File schematicFile = new File(BuildInBoxReborn.getInstance().getDataFolder(), item.getItemMeta().getCustomModelData() + ".schem");
                 if(schematicFile.exists()) {
                     editSchematic(block, schematicFile, player);
                     //block.setType(Material.AIR);
@@ -62,7 +62,7 @@ public class SpecialChestListener implements Listener {
                     if (material != Material.AIR) {
                         bukkitWorld.playSound(blockLocation, Sound.BLOCK_METAL_PLACE, 1.0F, 1.0F);
                         // Spawn the block break particles.
-                        Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(0, 0, 0), 1);
+                        Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(0, 0, 0), 2);
                         bukkitWorld.spawnParticle(Particle.SMOKE_NORMAL, blockLocation, 30, dustOptions);
                     }
 
@@ -87,8 +87,12 @@ public class SpecialChestListener implements Listener {
                 if (BukkitAdapter.adapt(blockInfo).getMaterial() != Material.AIR) {
                     BlockVector3 placePosition = point.subtract(minPoint).add(chestLocation);
                     BlockStateHolder blockHolder = clipboard.getBlock(point);
-                    Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
-                            () -> placeBlockSafely(worldEditWorld, placePosition, blockHolder,player), delay++);
+                    if (delay != 0) {
+                        Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
+                                () -> placeBlockSafely(worldEditWorld, placePosition, blockHolder,player), delay++);
+                    } else {
+                        delay++;
+                    }
                 }
             }
         } catch (IOException e) {
