@@ -29,6 +29,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.UUID;
 
 public class SaveRegionCommand implements CommandExecutor {
 
@@ -63,6 +66,8 @@ public class SaveRegionCommand implements CommandExecutor {
                     ItemStack chest = new ItemStack(Material.CHEST);
                     ItemMeta meta = chest.getItemMeta();
                     meta.setDisplayName(args[0]);
+                    meta.setCustomModelData(Math.abs(args[0].hashCode()));
+                    meta.setLore(Arrays.asList(ChatColor.GRAY + "Right-click to open the black hole chest"));
                     chest.setItemMeta(meta);
                     player.getInventory().addItem(chest);
                     player.sendMessage(ChatColor.GREEN + "Added '" + args[0] + "' black hole chest in your inventory." + ChatColor.RED + "Place it down to unravel the depths.");
