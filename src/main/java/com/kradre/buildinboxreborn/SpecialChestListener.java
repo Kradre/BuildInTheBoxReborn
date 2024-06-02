@@ -58,8 +58,10 @@ public class SpecialChestListener implements Listener {
 
                     // create location from block vector and play sound
                     Location blockLocation = new Location(bukkitWorld, x, y, z);
-                    bukkitWorld.playSound(blockLocation, Sound.BLOCK_AMETHYST_CLUSTER_PLACE, 1.0F, 1.0F);
-
+                    Material material = data.getMaterial();
+                    if (material != Material.AIR) {
+                        bukkitWorld.playSound(blockLocation, Sound.BLOCK_METAL_PLACE, 1.0F, 1.0F);
+                    }
                     // Spawn the block break particles.
                     Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(0, 0, 0), 1);
                     bukkitWorld.spawnParticle(Particle.BLOCK_DUST, blockLocation, 30, dustOptions);
