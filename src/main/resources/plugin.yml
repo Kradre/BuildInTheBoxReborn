@@ -1,0 +1,8 @@
+name: BuildInBoxReborn
+version: '${project.version}'
+main: com.kradre.buildinboxreborn.BuildInBoxReborn
+api-version: '1.20'
+depend: [WorldEdit]
+commands:
+  saveregion:
+    description: Saves the region
