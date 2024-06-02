@@ -66,7 +66,7 @@ public class SaveRegionCommand implements CommandExecutor {
                     ItemStack chest = new ItemStack(Material.CHEST);
                     ItemMeta meta = chest.getItemMeta();
                     meta.setDisplayName(args[0]);
-                    meta.setCustomModelData(Math.abs(args[0].hashCode()));
+                    //meta.setCustomModelData(Math.abs(args[0].hashCode()));
                     meta.setLore(Arrays.asList(ChatColor.GRAY + "Right-click to open the black hole chest"));
                     chest.setItemMeta(meta);
                     player.getInventory().addItem(chest);
