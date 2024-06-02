@@ -1,4 +1,5 @@
 package com.kradre.buildinboxreborn;
+
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -23,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.BlockVector;
 
@@ -45,12 +47,12 @@ public class SpecialChestListener implements Listener {
         if (block.getType() == Material.CHEST) {
             Player player = event.getPlayer();
             ItemStack item = event.getItemInHand();
-            if(item.hasItemMeta() && item.getItemMeta().getDisplayName() != null) {
+            if (item.hasItemMeta() && item.getItemMeta().getDisplayName() != null) {
                 String schematicName = item.getItemMeta().getDisplayName();
                 File schematicFile = new File(BuildInBoxReborn.getInstance().getDataFolder(), item.getItemMeta().getCustomModelData() + ".schem");
-                if(schematicFile.exists()) {
+                if (schematicFile.exists()) {
                     editSchematic(block, schematicFile, player);
-                    if(block.getState() instanceof Nameable) {
+                    if (block.getState() instanceof Nameable) {
                         BlockState state = block.getState();
                         Nameable nameable = (Nameable) state;
                         nameable.setCustomName(schematicName + "(" + item.getItemMeta().getCustomModelData() + ")");
@@ -67,14 +69,31 @@ public class SpecialChestListener implements Listener {
         Block block = event.getBlock();
         if (block.getType() == Material.CHEST && block.getState() instanceof Nameable) {
             Nameable nameable = (Nameable) block.getState();
-            // This should give you the schematic name
             String schematicName = extractSchematicName(nameable.getCustomName());
             File schematicFile = new File(BuildInBoxReborn.getInstance().getDataFolder(), schematicName + ".schem");
-            if(schematicFile.exists()) {
+            if (schematicFile.exists()) {
+                // Prevent the default drop
+                event.setDropItems(false);
+
                 removeSchematicBlocks(block, schematicFile, event.getPlayer());
-                //Need to apply a new name to the block
-                nameable.setCustomName(schematicName);
-                block.getState().update();
+
+                // Create a new chest item
+                ItemStack chestItem = new ItemStack(Material.CHEST);
+
+                // Get and set the item's metadata
+                ItemMeta meta = chestItem.getItemMeta();
+                if (meta != null) {
+
+                    int checkerName = nameable.getCustomName().indexOf("(");
+
+                    meta.setDisplayName((checkerName > -1) ? nameable.getCustomName().substring(0, checkerName) : schematicName);
+                    meta.setCustomModelData(Integer.parseInt(schematicName));
+                    chestItem.setItemMeta(meta);
+                }
+
+                // Drop the item at the block's location
+                World world = block.getWorld();
+                world.dropItemNaturally(block.getLocation(), chestItem);
             }
         }
     }
@@ -93,8 +112,11 @@ public class SpecialChestListener implements Listener {
 
             for (BlockVector3 point : clipboard.getRegion()) {
                 BlockVector3 placePosition = point.subtract(minPoint).add(chestLocation);
-                Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
-                        () -> placeBlockSafely(worldEditWorld, placePosition, airBlockHolder, player), delay++);
+                BlockStateHolder blockInfo = clipboard.getBlock(point);
+                if (BukkitAdapter.adapt(blockInfo).getMaterial() != Material.AIR) {
+                    Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
+                            () -> placeBlockSafely(worldEditWorld, placePosition, airBlockHolder, player), delay++);
+                }
             }
 
         } catch (IOException e) {
@@ -113,7 +135,7 @@ public class SpecialChestListener implements Listener {
         }
     }
 
-    private void placeBlockSafely(com.sk89q.worldedit.world.World world, BlockVector3 position, BlockStateHolder block,Player player) {
+    private void placeBlockSafely(com.sk89q.worldedit.world.World world, BlockVector3 position, BlockStateHolder block, Player player) {
         Bukkit.getScheduler().callSyncMethod(BuildInBoxReborn.getInstance(),
                 () -> {
                     org.bukkit.World bukkitWorld = Bukkit.getServer().getWorld(world.getName());
@@ -132,7 +154,6 @@ public class SpecialChestListener implements Listener {
                     bukkitWorld.spawnParticle(Particle.SMOKE_NORMAL, blockLocation, 30, dustOptions);
 
 
-
                     // TODO: Make verbose method for those kind of outputs
                     //player.sendMessage(ChatColor.GRAY + "Placing block at X:" + x + " Y:" + y + " Z:" + z);
                     return null;
@@ -147,7 +168,7 @@ public class SpecialChestListener implements Listener {
             com.sk89q.worldedit.world.World worldEditWorld = BukkitAdapter.adapt(player.getWorld());
             BlockVector3 chestLocation = BukkitAdapter.asBlockVector(block.getLocation());
             int delay = 0;
-            player.sendMessage(ChatColor.YELLOW + "Unpacking from the black hole..." );
+            player.sendMessage(ChatColor.YELLOW + "Unpacking from the black hole...");
             for (BlockVector3 point : clipboard.getRegion()) {
                 BlockStateHolder blockInfo = clipboard.getBlock(point);
                 if (BukkitAdapter.adapt(blockInfo).getMaterial() != Material.AIR) {
@@ -155,7 +176,7 @@ public class SpecialChestListener implements Listener {
                     BlockStateHolder blockHolder = clipboard.getBlock(point);
                     if (delay != 0) {
                         Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
-                                () -> placeBlockSafely(worldEditWorld, placePosition, blockHolder,player), delay++);
+                                () -> placeBlockSafely(worldEditWorld, placePosition, blockHolder, player), delay++);
                     } else {
                         delay++;
                     }
