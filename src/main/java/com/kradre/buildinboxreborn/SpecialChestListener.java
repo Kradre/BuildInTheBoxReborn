@@ -11,16 +11,15 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.BlockVector;
 
 import java.io.File;
@@ -54,8 +53,19 @@ public class SpecialChestListener implements Listener {
                     int x = position.getBlockX();
                     int y = position.getBlockY();
                     int z = position.getBlockZ();
-                    bukkitWorld.getBlockAt(x, y, z).setBlockData(BukkitAdapter.adapt(block).clone());
-                    player.sendMessage(ChatColor.GRAY + "Placing block at X:" + x + " Y:" + y + " Z:" + z);
+                    BlockData data = BukkitAdapter.adapt(block); // Get the Minecraft block data
+                    bukkitWorld.getBlockAt(x, y, z).setBlockData(data.clone());
+
+                    // create location from block vector and play sound
+                    Location blockLocation = new Location(bukkitWorld, x, y, z);
+                    bukkitWorld.playSound(blockLocation, Sound.BLOCK_AMETHYST_CLUSTER_PLACE, 1.0F, 1.0F);
+
+                    // Spawn the block break particles.
+                    Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(0, 0, 0), 1);
+                    bukkitWorld.spawnParticle(Particle.BLOCK_DUST, blockLocation, 30, dustOptions);
+
+                    // TODO: Make verbose method for those kind of outputs
+                    //player.sendMessage(ChatColor.GRAY + "Placing block at X:" + x + " Y:" + y + " Z:" + z);
                     return null;
                 });
     }
@@ -68,9 +78,11 @@ public class SpecialChestListener implements Listener {
             com.sk89q.worldedit.world.World worldEditWorld = BukkitAdapter.adapt(player.getWorld());
             BlockVector3 chestLocation = BukkitAdapter.asBlockVector(block.getLocation());
             int delay = 0;
+            player.sendMessage(ChatColor.YELLOW + "Unpacking from the black hole..." );
             for (BlockVector3 point : clipboard.getRegion()) {
                 BlockVector3 placePosition = point.subtract(minPoint).add(chestLocation);
                 BlockStateHolder blockHolder = clipboard.getBlock(point);
+                //Check if the last element in variable
                 Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
                         () -> placeBlockSafely(worldEditWorld, placePosition, blockHolder,player), delay++);
             }
