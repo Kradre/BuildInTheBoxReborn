@@ -40,7 +40,7 @@ public class SpecialChestListener implements Listener {
                 File schematicFile = new File(BuildInBoxReborn.getInstance().getDataFolder(), schematicName + ".schem");
                 if(schematicFile.exists()) {
                     editSchematic(block, schematicFile, player);
-                    block.setType(Material.AIR);
+                    //block.setType(Material.AIR);
                 }
             }
         }
@@ -61,10 +61,11 @@ public class SpecialChestListener implements Listener {
                     Material material = data.getMaterial();
                     if (material != Material.AIR) {
                         bukkitWorld.playSound(blockLocation, Sound.BLOCK_METAL_PLACE, 1.0F, 1.0F);
+                        // Spawn the block break particles.
+                        Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(0, 0, 0), 1);
+                        bukkitWorld.spawnParticle(Particle.SMOKE_NORMAL, blockLocation, 30, dustOptions);
                     }
-                    // Spawn the block break particles.
-                    Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(0, 0, 0), 1);
-                    bukkitWorld.spawnParticle(Particle.BLOCK_DUST, blockLocation, 30, dustOptions);
+
 
                     // TODO: Make verbose method for those kind of outputs
                     //player.sendMessage(ChatColor.GRAY + "Placing block at X:" + x + " Y:" + y + " Z:" + z);
@@ -82,11 +83,13 @@ public class SpecialChestListener implements Listener {
             int delay = 0;
             player.sendMessage(ChatColor.YELLOW + "Unpacking from the black hole..." );
             for (BlockVector3 point : clipboard.getRegion()) {
-                BlockVector3 placePosition = point.subtract(minPoint).add(chestLocation);
-                BlockStateHolder blockHolder = clipboard.getBlock(point);
-                //Check if the last element in variable
-                Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
-                        () -> placeBlockSafely(worldEditWorld, placePosition, blockHolder,player), delay++);
+                BlockStateHolder blockInfo = clipboard.getBlock(point);
+                if (BukkitAdapter.adapt(blockInfo).getMaterial() != Material.AIR) {
+                    BlockVector3 placePosition = point.subtract(minPoint).add(chestLocation);
+                    BlockStateHolder blockHolder = clipboard.getBlock(point);
+                    Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
+                            () -> placeBlockSafely(worldEditWorld, placePosition, blockHolder,player), delay++);
+                }
             }
         } catch (IOException e) {
             player.sendMessage(ChatColor.RED + "Error loading schematic: " + e.getMessage());
