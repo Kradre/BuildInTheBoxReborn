@@ -110,12 +110,36 @@ public class SpecialChestListener implements Listener {
 
             BlockStateHolder airBlockHolder = BlockTypes.AIR.getDefaultState();
 
+            //get the amount of blocks in clipboard except air
+            int blockCount = 0;
+            for (BlockVector3 point : clipboard.getRegion()) {
+                BlockStateHolder blockInfo = clipboard.getBlock(point);
+                if (BukkitAdapter.adapt(blockInfo).getMaterial() != Material.AIR) {
+                    blockCount++;
+                }
+            }
+
+            int ticker = (int) Math.ceil((double) blockCount / 100);
+
+            if (ticker < 1) {
+                ticker = 1;
+            }
+
+            int counter = 0;
+
             for (BlockVector3 point : clipboard.getRegion()) {
                 BlockVector3 placePosition = point.subtract(minPoint).add(chestLocation);
                 BlockStateHolder blockInfo = clipboard.getBlock(point);
                 if (BukkitAdapter.adapt(blockInfo).getMaterial() != Material.AIR) {
+                    counter++;
+
+                    if (counter > ticker) {
+                        counter = 0;
+                        delay++;
+                    }
+
                     Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
-                            () -> placeBlockSafely(worldEditWorld, placePosition, airBlockHolder, player), delay++);
+                            () -> placeBlockSafely(worldEditWorld, placePosition, airBlockHolder, player), delay);
                 }
             }
 
@@ -155,7 +179,7 @@ public class SpecialChestListener implements Listener {
 
 
                     // TODO: Make verbose method for those kind of outputs
-                    //player.sendMessage(ChatColor.GRAY + "Placing block at X:" + x + " Y:" + y + " Z:" + z);
+                    player.sendMessage(ChatColor.GRAY + "Placing block at X:" + x + " Y:" + y + " Z:" + z);
                     return null;
                 });
     }
@@ -167,19 +191,50 @@ public class SpecialChestListener implements Listener {
             BlockVector3 minPoint = clipboard.getMinimumPoint();
             com.sk89q.worldedit.world.World worldEditWorld = BukkitAdapter.adapt(player.getWorld());
             BlockVector3 chestLocation = BukkitAdapter.asBlockVector(block.getLocation());
-            int delay = 0;
+            int delay = 1;
             player.sendMessage(ChatColor.YELLOW + "Unpacking from the black hole...");
+
+            BlockStateHolder airBlockHolder = BlockTypes.AIR.getDefaultState();
+
+            //get the amount of blocks in clipboard except air
+            int blockCount = 0;
             for (BlockVector3 point : clipboard.getRegion()) {
                 BlockStateHolder blockInfo = clipboard.getBlock(point);
                 if (BukkitAdapter.adapt(blockInfo).getMaterial() != Material.AIR) {
+                    blockCount++;
+                }
+            }
+
+            int ticker = (int) Math.ceil((double) blockCount / 100);
+
+            if (ticker < 1) {
+                ticker = 1;
+            }
+
+            int counter = 0;
+
+            boolean checkFirst = true;
+
+            for (BlockVector3 point : clipboard.getRegion()) {
+                BlockStateHolder blockInfo = clipboard.getBlock(point);
+                if (BukkitAdapter.adapt(blockInfo).getMaterial() != Material.AIR) {
+                    counter++;
                     BlockVector3 placePosition = point.subtract(minPoint).add(chestLocation);
                     BlockStateHolder blockHolder = clipboard.getBlock(point);
-                    if (delay != 0) {
-                        Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
-                                () -> placeBlockSafely(worldEditWorld, placePosition, blockHolder, player), delay++);
-                    } else {
+
+                    // Apply 1 to delay each ticker amount of counter
+                    if (counter > ticker) {
+                        counter = 0;
                         delay++;
                     }
+
+                    if (checkFirst) {
+                        checkFirst = !checkFirst;
+                        continue;
+                    }
+
+                    Bukkit.getScheduler().runTaskLater(BuildInBoxReborn.getInstance(),
+                            () -> placeBlockSafely(worldEditWorld, placePosition, blockHolder, player), delay);
                 }
             }
         } catch (IOException e) {
