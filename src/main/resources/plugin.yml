@@ -6,3 +6,7 @@ depend: [WorldEdit]
 commands:
   bibr:
     description: Copy region and put it into the chest
+  bibr list:
+    description: List all chests used in the system
+  bibr clone:
+    description: Give specific chest from the list
