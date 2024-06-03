@@ -18,7 +18,7 @@ public class SchematicCommands implements CommandExecutor {
 
     public SchematicCommands() {
         // Assuming the schematics are stored in a folder named 'schematics' in the plugin's data folder
-        File schematicsFolder = new File(BuildInBoxReborn.getInstance().getDataFolder(),"");
+        File schematicsFolder = BuildInBoxReborn.getInstance().getDataFolder();
         if (!schematicsFolder.exists() || !schematicsFolder.isDirectory()) {
             return;
         }
