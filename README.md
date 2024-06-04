@@ -31,4 +31,4 @@ Here is how to use the plugin:
 
 ## Known bugs:
 
--No way to recover a box after its disappearance.
+- No way to recover a box after its disappearance.
