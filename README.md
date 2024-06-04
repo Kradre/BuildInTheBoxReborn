@@ -24,9 +24,11 @@ Here is how to use the plugin:
 2. Upon executing the command, the selected area will be saved in the box, and the box will be placed in your inventory.
 3. When you place the box, it will automatically be replaced with the build saved previously.
 
-## Known Issues
+## New features:
 
-Here is the list of known issues with the current version:
+- Boxes are now kept in place after being placed down. If the user removes that box, the building that was placed in it gets removed as well.
+- The boxes have unique uuids that can now only be duplicated by the admin or creative player.
 
-- If a player uses the same name for a chest as for the box, the game will recognize both as identical. Therefore, be
-  sure to give unique names to your boxes.
+## Known bugs:
+
+-No way to recover a box after its disappearance.
