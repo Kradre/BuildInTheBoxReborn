@@ -30,8 +30,9 @@ public final class BuildInBoxReborn extends JavaPlugin {
         }
         Bukkit.getPluginManager().registerEvents(new SpecialChestListener(), this);
         Objects.requireNonNull(this.getCommand("bibr")).setExecutor(new SaveRegionCommand());
-        Objects.requireNonNull(this.getCommand("bibr list")).setExecutor(new SchematicCommands());
-        Objects.requireNonNull(this.getCommand("bibr clone")).setExecutor(new SchematicCommands());
+        /** TODO: Finish methods **/
+        //Objects.requireNonNull(this.getCommand("bibr-list")).setExecutor(new SchematicCommands());
+        //Objects.requireNonNull(this.getCommand("bibr-clone")).setExecutor(new SchematicCommands());
 
     }
 

@@ -34,12 +34,12 @@ public class SchematicCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (command.getName().equalsIgnoreCase("bibr list")) {
+        if (command.getName().equalsIgnoreCase("bibr-list")) {
             for (int i = 0; i < schematics.size(); i++) {
                 // Display the schematics list in chat
                 sender.sendMessage((i + 1) + ". " + schematics.get(i).getName());
             }
-        } else if (command.getName().equalsIgnoreCase("bibr clone") && sender instanceof Player) {
+        } else if (command.getName().equalsIgnoreCase("bibr-clone") && sender instanceof Player) {
             if (args.length == 0) {
                 sender.sendMessage("You must specify a schematic number!");
                 return true;

@@ -4,9 +4,13 @@ main: com.kradre.buildinboxreborn.BuildInBoxReborn
 api-version: '1.20'
 depend: [WorldEdit]
 commands:
-  bibr:
+  'bibr':
     description: Copy region and put it into the chest
-  bibr list:
-    description: List all chests used in the system
-  bibr clone:
-    description: Give specific chest from the list
+    usage: "/bibr <name>"
+    aliases: [buildinbox, box]
+    permission: bibr.create
+    permission-message: "No block holes for you, mister"
+permissions:
+  bibr.create:
+    description: "Create black hole chest"
+    default: not op
