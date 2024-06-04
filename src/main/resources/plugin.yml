@@ -13,4 +13,4 @@ commands:
 permissions:
   bibr.create:
     description: "Create black hole chest"
-    default: not op
+    default: op
