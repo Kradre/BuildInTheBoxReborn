@@ -57,7 +57,7 @@ public class SaveRegionCommand implements CommandExecutor {
                         return false;
                     }
 
-                    File schematicFile = new File(BuildInBoxReborn.getInstance().getDataFolder(), args[0] + ".schem");
+                    File schematicFile = new File(BuildInBoxReborn.getInstance().getDataFolder(), Math.abs(args[0].hashCode()) + ".schem");
                     BuiltInClipboardFormat format = BuiltInClipboardFormat.SPONGE_SCHEMATIC;
                     try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(schematicFile)); ClipboardWriter writer = format.getWriter(stream)) {
                         writer.write(clipboard);
@@ -66,7 +66,7 @@ public class SaveRegionCommand implements CommandExecutor {
                     ItemStack chest = new ItemStack(Material.CHEST);
                     ItemMeta meta = chest.getItemMeta();
                     meta.setDisplayName(args[0]);
-                    //meta.setCustomModelData(Math.abs(args[0].hashCode()));
+                    meta.setCustomModelData(Math.abs(args[0].hashCode()));
                     meta.setLore(Arrays.asList(ChatColor.GRAY + "Right-click to open the black hole chest"));
                     chest.setItemMeta(meta);
                     player.getInventory().addItem(chest);

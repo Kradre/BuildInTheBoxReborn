@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Objects;
 
 public final class BuildInBoxReborn extends JavaPlugin {
@@ -17,8 +19,20 @@ public final class BuildInBoxReborn extends JavaPlugin {
         if (!pluginFolder.exists()) {
             pluginFolder.mkdirs();
         }
+        File pluginMemory = new File(getDataFolder(), "saves.json");
+        if (!pluginMemory.exists()) {
+            try (FileWriter file = new FileWriter(pluginMemory)) {
+                file.write("[]");  // Writing empty JSON array to the file
+                file.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         Bukkit.getPluginManager().registerEvents(new SpecialChestListener(), this);
         Objects.requireNonNull(this.getCommand("bibr")).setExecutor(new SaveRegionCommand());
+        /** TODO: Finish methods **/
+        //Objects.requireNonNull(this.getCommand("bibr-list")).setExecutor(new SchematicCommands());
+        //Objects.requireNonNull(this.getCommand("bibr-clone")).setExecutor(new SchematicCommands());
 
     }
 
