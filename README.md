@@ -20,7 +20,7 @@ Before you start, please ensure you meet the following requirements:
 
 Here is how to use the plugin:
 
-1. Save your selection from Worldedit into the box using the command `/saveregion <name>`.
+1. Save your selection from Worldedit into the box using the command `/bibr <name>`.
 2. Upon executing the command, the selected area will be saved in the box, and the box will be placed in your inventory.
 3. When you place the box, it will automatically be replaced with the build saved previously.
 
