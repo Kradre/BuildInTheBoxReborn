@@ -175,7 +175,7 @@ public class SpecialChestListener implements Listener {
                     bukkitWorld.playSound(blockLocation, (material == Material.AIR) ? Sound.BLOCK_METAL_BREAK : Sound.BLOCK_METAL_PLACE, 1.0F, 1.0F);
                     // Spawn the block break particles.
                     Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(0, 0, 0), 4);
-                    bukkitWorld.spawnParticle(Particle.SMOKE_NORMAL, blockLocation, 30, dustOptions);
+                    bukkitWorld.spawnParticle(Particle.VIBRATION, blockLocation, 30, dustOptions);
 
 
                     // TODO: Make verbose method for those kind of outputs

@@ -10,6 +10,9 @@ commands:
     aliases: [buildinbox, box]
     permission: bibr.create
     permission-message: "No block holes for you, mister"
+  'bibr2':
+    description: Checking extra info
+    usage: "/bibr2"
 permissions:
   bibr.create:
     description: "Create black hole chest"
